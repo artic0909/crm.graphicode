@@ -200,10 +200,17 @@ class FollowupController extends Controller
                 'status_id' => $request->status_id,
                 'priority' => $request->priority,
             ]);
+
+            if ($request->schedule_type === 'Losted') {
+                $model->update([
+                    'is_losted' => 1,
+                    'losted_date' => now(),
+                ]);
+            }
         }
 
         $nextScheduleDate = null;
-        if ($request->schedule_type) {
+        if ($request->schedule_type && $request->schedule_type !== 'Losted') {
             if ($request->schedule_type === 'Today') {
                 $nextScheduleDate = \Carbon\Carbon::today();
             } elseif ($request->schedule_type === 'Tomorrow') {
@@ -239,8 +246,15 @@ class FollowupController extends Controller
             ]);
         }
 
+        $successMsg = ($request->schedule_type === 'Losted') 
+            ? 'Followup added and lead marked as losted successfully!' 
+            : 'Followup added successfully!';
+
         if (!$isOrder) {
             session()->put('highlight_lead_id', $model->id);
+            if ($request->schedule_type === 'Losted' && !$request->input('return_url')) {
+                return redirect()->route('admin.leads.index')->with('success', $successMsg);
+            }
         }
 
         $redirectUrl = $request->input('return_url');
@@ -251,10 +265,10 @@ class FollowupController extends Controller
             } else {
                 $redirectUrl = preg_replace('/#.*/', $hash, $redirectUrl);
             }
-            return redirect($redirectUrl)->with('success', 'Followup added successfully!');
+            return redirect($redirectUrl)->with('success', $successMsg);
         }
 
-        return redirect()->back()->with('success', 'Followup added successfully!');
+        return redirect()->back()->with('success', $successMsg);
     }
 
     public function update(Request $request, $id)
@@ -273,8 +287,15 @@ class FollowupController extends Controller
 
         $followup = Followup::findOrFail($id);
 
+        if ($request->schedule_type === 'Losted' && $followup->followable_type === \App\Models\Lead::class && $followup->followable) {
+            $followup->followable->update([
+                'is_losted' => 1,
+                'losted_date' => now(),
+            ]);
+        }
+
         $nextScheduleDate = null;
-        if ($request->schedule_type) {
+        if ($request->schedule_type && $request->schedule_type !== 'Losted') {
             if ($request->schedule_type === 'Today') {
                 $nextScheduleDate = \Carbon\Carbon::today();
             } elseif ($request->schedule_type === 'Tomorrow') {
@@ -307,6 +328,10 @@ class FollowupController extends Controller
             ]);
         }
 
-        return redirect()->back()->with('success', 'Followup updated successfully!');
+        $successMsg = ($request->schedule_type === 'Losted') 
+            ? 'Followup updated and lead marked as losted successfully!' 
+            : 'Followup updated successfully!';
+
+        return redirect()->back()->with('success', $successMsg);
     }
 }

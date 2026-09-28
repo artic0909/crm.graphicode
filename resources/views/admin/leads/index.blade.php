@@ -805,6 +805,7 @@
                                                                 <option value="After 7 Days">After 7 days</option>
                                                                 <option value="No Schedule">Closed Schedule</option>
                                                                 <option value="Custom">Custom Date</option>
+                                                                <option value="Losted">Losted</option>
                                                             </select>
                                                             <div style="display:none; margin-top:8px;">
                                                                 <input type="date" name="custom_schedule_date" class="form-inp" style="width:100%; padding:8px 12px; border-radius:6px; border:1px solid var(--b1); background:var(--bg3); color:var(--t1); font-size:13px; outline:none;">
@@ -1127,6 +1128,7 @@
                                 <option value="After 5 Days">After 5 days</option>
                                 <option value="After 7 Days">After 7 days</option>
                                 <option value="No Schedule">Closed Schedule</option>
+                                <option value="Losted">Losted</option>
                                 <option value="Custom">Custom Date</option>
                             </select>
                             <div style="display:none; margin-top:8px;">
