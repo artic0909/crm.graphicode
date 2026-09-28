@@ -104,7 +104,7 @@ class OrderController extends Controller
             $perPage = $totalOrdersCount ?: 20;
         }
 
-        $query->with(['status', 'services', 'sources', 'plans', 'assignments.sale', 'createdBy'])->withCount('followups');
+        $query->with(['status', 'services', 'sources', 'plans', 'assignments.sale', 'createdBy'])->withSum('payments', 'amount')->withCount('followups');
         $orders = $query->latest()->paginate($perPage)->withQueryString();
 
         // Total Calling & Message Followups for the logged-in salesperson's assigned orders
@@ -235,7 +235,7 @@ class OrderController extends Controller
             $perPage = $totalOrdersCount ?: 20;
         }
 
-        $orders = $query->with(['status', 'services', 'sources', 'plans', 'assignments.sale', 'createdBy'])->withCount('followups')->latest()->paginate($perPage)->withQueryString();
+        $orders = $query->with(['status', 'services', 'sources', 'plans', 'assignments.sale', 'createdBy'])->withSum('payments', 'amount')->withCount('followups')->latest()->paginate($perPage)->withQueryString();
         
         // Total Calling & Message Followups for the logged-in salesperson's assigned orders
         $orderIds = (clone $aggQuery)->pluck('id');

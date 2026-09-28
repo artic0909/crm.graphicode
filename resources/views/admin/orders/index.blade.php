@@ -271,6 +271,7 @@
                                 <th>Contact Person</th>
                                 <th>Value</th>
                                 <th>Advance</th>
+                                <th>Remaining</th>
                                 <th>Status</th>
                                 <th>Sales Person</th>
                                 <th>Followup</th>
@@ -314,6 +315,20 @@
                                 </td>
                                 <td><span class="src-tag">₹{{ number_format($order->order_value, 0) }}</span></td>
                                 <td><span class="src-tag" style="background:#10b98120; color:#10b981;">₹{{ number_format($order->advance_payment, 0) }}</span></td>
+                                @php
+                                    $paid = $order->payments_sum_amount ?? ($order->relationLoaded('payments') ? $order->payments->sum('amount') : $order->advance_payment);
+                                    if ($paid === null || ($paid == 0 && $order->advance_payment > 0)) {
+                                        $paid = $order->advance_payment;
+                                    }
+                                    $remaining = max(0, $order->order_value - $paid);
+                                @endphp
+                                <td>
+                                    @if($remaining > 0)
+                                        <span class="src-tag" style="background:rgba(239, 68, 68, 0.12); color:#ef4444; font-weight:700;">₹{{ number_format($remaining, 0) }}</span>
+                                    @else
+                                        <span class="src-tag" style="background:#10b98120; color:#10b981; font-weight:700;">₹0</span>
+                                    @endif
+                                </td>
                                 <td>
                                     <span class="status-pill" style="background:{{ ($order->status->color ?? '#6366f1') }}20; color:{{ $order->status->color ?? '#6366f1' }};">
                                         {{ $order->status->name ?? 'Pending' }}
