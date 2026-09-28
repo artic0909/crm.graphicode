@@ -12,6 +12,7 @@ use App\Models\Sale;
 use App\Models\Developer;
 use App\Models\Status;
 use App\Models\Followup;
+use App\Models\Attendance;
 use Carbon\Carbon;
 use Illuminate\Support\Facades\DB;
 
@@ -114,6 +115,55 @@ class DashboardController extends Controller
 
         $totalSalesPerson = Sale::count();
         $totalDevelopers = Developer::count();
+
+        // Attendance Rates (Filtered by selected Month / Year)
+        $saleAttendanceQuery = Attendance::where('user_type', 'Sale');
+        $devAttendanceQuery = Attendance::where('user_type', 'Developer');
+
+        if ($selectedMonth !== 'all' && $selectedYear !== 'all') {
+            $attStartDate = Carbon::create((int)$selectedYear, (int)$selectedMonth, 1)->startOfMonth();
+            $attEndDate = $attStartDate->copy()->endOfMonth();
+            $saleAttendanceQuery->whereBetween('date', [$attStartDate->toDateString(), $attEndDate->toDateString()]);
+            $devAttendanceQuery->whereBetween('date', [$attStartDate->toDateString(), $attEndDate->toDateString()]);
+        } elseif ($selectedMonth !== 'all') {
+            $saleAttendanceQuery->whereMonth('date', (int)$selectedMonth);
+            $devAttendanceQuery->whereMonth('date', (int)$selectedMonth);
+        } elseif ($selectedYear !== 'all') {
+            $saleAttendanceQuery->whereYear('date', (int)$selectedYear);
+            $devAttendanceQuery->whereYear('date', (int)$selectedYear);
+        }
+
+        $saleTotalLogs = (clone $saleAttendanceQuery)->count();
+        $salePresentLogs = (clone $saleAttendanceQuery)->where('status', '!=', 'Absent')->count();
+        $salesAttendanceRate = $saleTotalLogs > 0 ? round(($salePresentLogs / $saleTotalLogs) * 100, 1) : 0;
+
+        $devTotalLogs = (clone $devAttendanceQuery)->count();
+        $devPresentLogs = (clone $devAttendanceQuery)->where('status', '!=', 'Absent')->count();
+        $devsAttendanceRate = $devTotalLogs > 0 ? round(($devPresentLogs / $devTotalLogs) * 100, 1) : 0;
+
+        // Dynamic 7-point Sparklines for Attendance
+        $salesAttendanceSpark = [];
+        $devsAttendanceSpark = [];
+        $sparkBaseDate = Carbon::today();
+        if ($selectedMonth !== 'all' && $selectedYear !== 'all') {
+            $sparkBaseDate = Carbon::create((int)$selectedYear, (int)$selectedMonth, 1)->endOfMonth();
+        } elseif ($selectedMonth !== 'all') {
+            $sparkBaseDate = Carbon::create(Carbon::now()->year, (int)$selectedMonth, 1)->endOfMonth();
+        } elseif ($selectedYear !== 'all') {
+            $sparkBaseDate = Carbon::create((int)$selectedYear, 12, 31);
+        }
+
+        for ($i = 6; $i >= 0; $i--) {
+            $sparkDay = $sparkBaseDate->copy()->subDays($i)->toDateString();
+            
+            $daySaleTotal = Attendance::where('user_type', 'Sale')->whereDate('date', $sparkDay)->count();
+            $daySalePresent = Attendance::where('user_type', 'Sale')->whereDate('date', $sparkDay)->where('status', '!=', 'Absent')->count();
+            $salesAttendanceSpark[] = $daySaleTotal > 0 ? round(($daySalePresent / $daySaleTotal) * 100) : ($salesAttendanceRate > 0 ? $salesAttendanceRate : 0);
+
+            $dayDevTotal = Attendance::where('user_type', 'Developer')->whereDate('date', $sparkDay)->count();
+            $dayDevPresent = Attendance::where('user_type', 'Developer')->whereDate('date', $sparkDay)->where('status', '!=', 'Absent')->count();
+            $devsAttendanceSpark[] = $dayDevTotal > 0 ? round(($dayDevPresent / $dayDevTotal) * 100) : ($devsAttendanceRate > 0 ? $devsAttendanceRate : 0);
+        }
 
         // CHART DATA (Keeping it for both since it's nice, but scoped)
         $months = [];
@@ -426,7 +476,8 @@ class DashboardController extends Controller
             'activeProjects', 'completedProjects', 'totalSalesPerson', 'totalDevelopers',
             'months', 'monthlyOrderValues', 'monthlyReceivedAmounts', 'marketingOrders',
             'projectPipeline', 'totalProjects', 'selectedMonth', 'selectedYear', 'availableYears', 'routePrefix', 'closestMeeting',
-            'leadFunnel', 'followupStats', 'monthlyOrderCounts', 'monthlyWebOrderCounts', 'monthlyMktOrderCounts'
+            'leadFunnel', 'followupStats', 'monthlyOrderCounts', 'monthlyWebOrderCounts', 'monthlyMktOrderCounts',
+            'salesAttendanceRate', 'devsAttendanceRate', 'salesAttendanceSpark', 'devsAttendanceSpark'
         ));
     }
 

@@ -480,16 +480,22 @@
                                 class="bi bi-clock-fill"></i></div>
 
                     </div>
-                    <div class="kpi-value">94.2%</div>
+                    <div class="kpi-value">{{ number_format($salesAttendanceRate ?? 0, 1) }}%</div>
                     <div class="kpi-label">Sales Attendance Rate</div>
                     <div class="kpi-spark">
-                        <div class="spark-bar" style="height:88%;--kpi-accent:#06b6d4"></div>
-                        <div class="spark-bar" style="height:91%;--kpi-accent:#06b6d4"></div>
-                        <div class="spark-bar" style="height:89%;--kpi-accent:#06b6d4"></div>
-                        <div class="spark-bar" style="height:93%;--kpi-accent:#06b6d4"></div>
-                        <div class="spark-bar" style="height:90%;--kpi-accent:#06b6d4"></div>
-                        <div class="spark-bar" style="height:95%;--kpi-accent:#06b6d4"></div>
-                        <div class="spark-bar active" style="height:94%;--kpi-accent:#06b6d4"></div>
+                        @if(!empty($salesAttendanceSpark))
+                            @foreach($salesAttendanceSpark as $height)
+                                <div class="spark-bar {{ $loop->last ? 'active' : '' }}" style="height:{{ max(15, min(100, $height)) }}%;--kpi-accent:#06b6d4"></div>
+                            @endforeach
+                        @else
+                            <div class="spark-bar" style="height:88%;--kpi-accent:#06b6d4"></div>
+                            <div class="spark-bar" style="height:91%;--kpi-accent:#06b6d4"></div>
+                            <div class="spark-bar" style="height:89%;--kpi-accent:#06b6d4"></div>
+                            <div class="spark-bar" style="height:93%;--kpi-accent:#06b6d4"></div>
+                            <div class="spark-bar" style="height:90%;--kpi-accent:#06b6d4"></div>
+                            <div class="spark-bar" style="height:95%;--kpi-accent:#06b6d4"></div>
+                            <div class="spark-bar active" style="height:94%;--kpi-accent:#06b6d4"></div>
+                        @endif
                     </div>
                 </div>
 
@@ -499,16 +505,22 @@
                                 class="bi bi-clock-fill"></i></div>
 
                     </div>
-                    <div class="kpi-value">94.2%</div>
+                    <div class="kpi-value">{{ number_format($devsAttendanceRate ?? 0, 1) }}%</div>
                     <div class="kpi-label">Developers Attendance Rate</div>
                     <div class="kpi-spark">
-                        <div class="spark-bar" style="height:88%;--kpi-accent:#06b6d4"></div>
-                        <div class="spark-bar" style="height:91%;--kpi-accent:#06b6d4"></div>
-                        <div class="spark-bar" style="height:89%;--kpi-accent:#06b6d4"></div>
-                        <div class="spark-bar" style="height:93%;--kpi-accent:#06b6d4"></div>
-                        <div class="spark-bar" style="height:90%;--kpi-accent:#06b6d4"></div>
-                        <div class="spark-bar" style="height:95%;--kpi-accent:#06b6d4"></div>
-                        <div class="spark-bar active" style="height:94%;--kpi-accent:#06b6d4"></div>
+                        @if(!empty($devsAttendanceSpark))
+                            @foreach($devsAttendanceSpark as $height)
+                                <div class="spark-bar {{ $loop->last ? 'active' : '' }}" style="height:{{ max(15, min(100, $height)) }}%;--kpi-accent:#06b6d4"></div>
+                            @endforeach
+                        @else
+                            <div class="spark-bar" style="height:88%;--kpi-accent:#06b6d4"></div>
+                            <div class="spark-bar" style="height:91%;--kpi-accent:#06b6d4"></div>
+                            <div class="spark-bar" style="height:89%;--kpi-accent:#06b6d4"></div>
+                            <div class="spark-bar" style="height:93%;--kpi-accent:#06b6d4"></div>
+                            <div class="spark-bar" style="height:90%;--kpi-accent:#06b6d4"></div>
+                            <div class="spark-bar" style="height:95%;--kpi-accent:#06b6d4"></div>
+                            <div class="spark-bar active" style="height:94%;--kpi-accent:#06b6d4"></div>
+                        @endif
                     </div>
                 </div>
                 @endif
