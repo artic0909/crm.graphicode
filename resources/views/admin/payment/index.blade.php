@@ -28,45 +28,39 @@
             </div>
 
             {{-- SUMMARY BOXES --}}
-            <div id="statsWrap"
-                style="display:grid;grid-template-columns:repeat(2,1fr);gap:14px;margin-bottom:24px;max-width:600px;">
-                <div class="dash-card" style="padding:20px 22px;">
-                    <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:14px;">
-                        <div
-                            style="width:44px;height:44px;border-radius:11px;background:rgba(16,185,129,.14);display:flex;align-items:center;justify-content:center;flex-shrink:0;">
-                            <i class="bi bi-check-circle-fill" style="font-size:20px;color:#10b981;"></i>
+            <div id="statsWrap" class="pay-stats-grid">
+                <div class="dash-card pay-stat-card">
+                    <div class="pay-stat-header">
+                        <div class="pay-stat-icon collected">
+                            <i class="bi bi-check-circle-fill"></i>
                         </div>
-                        <span
-                            style="font-size:11px;font-weight:700;padding:3px 10px;border-radius:20px;background:rgba(16,185,129,.1);color:#10b981;">Collected</span>
+                        <span class="pay-stat-badge collected">Collected</span>
                     </div>
-                    <div
-                        style="font-size:26px;font-weight:800;color:#10b981;letter-spacing:-.5px;line-height:1;font-family:var(--mono);">
-                        ₹{{ number_format($totalCollected, 0) }}</div>
-                    <div style="font-size:12px;color:var(--t3);font-weight:500;margin-top:5px;">Total Collected Amount</div>
-                    <div style="margin-top:10px;height:4px;border-radius:4px;background:var(--b1);overflow:hidden;">
-                        <div
-                            style="height:100%;width:{{ $totalOrderValue > 0 ? (min(100, ($totalCollected / $totalOrderValue) * 100)) : 0 }}%;background:#10b981;border-radius:4px;">
+                    <div class="pay-stat-body">
+                        <div class="pay-stat-val collected">₹{{ number_format($totalCollected, 0) }}</div>
+                        <div class="pay-stat-lbl">Total Collected Amount</div>
+                    </div>
+                    <div class="pay-stat-progress">
+                        <div class="pay-stat-progress-fill collected"
+                            style="width: {{ $totalOrderValue > 0 ? (min(100, ($totalCollected / $totalOrderValue) * 100)) : 0 }}%;">
                         </div>
                     </div>
                 </div>
 
-                <div class="dash-card" style="padding:20px 22px;">
-                    <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:14px;">
-                        <div
-                            style="width:44px;height:44px;border-radius:11px;background:rgba(239,68,68,.14);display:flex;align-items:center;justify-content:center;flex-shrink:0;">
-                            <i class="bi bi-hourglass-split" style="font-size:20px;color:#ef4444;"></i>
+                <div class="dash-card pay-stat-card">
+                    <div class="pay-stat-header">
+                        <div class="pay-stat-icon outstanding">
+                            <i class="bi bi-hourglass-split"></i>
                         </div>
-                        <span
-                            style="font-size:11px;font-weight:700;padding:3px 10px;border-radius:20px;background:rgba(239,68,68,.1);color:#ef4444;">Outstanding</span>
+                        <span class="pay-stat-badge outstanding">Outstanding</span>
                     </div>
-                    <div
-                        style="font-size:26px;font-weight:800;color:#ef4444;letter-spacing:-.5px;line-height:1;font-family:var(--mono);">
-                        ₹{{ number_format($totalOutstanding, 0) }}</div>
-                    <div style="font-size:12px;color:var(--t3);font-weight:500;margin-top:5px;">Total Outstanding Balance
+                    <div class="pay-stat-body">
+                        <div class="pay-stat-val outstanding">₹{{ number_format($totalOutstanding, 0) }}</div>
+                        <div class="pay-stat-lbl">Total Outstanding Balance</div>
                     </div>
-                    <div style="margin-top:10px;height:4px;border-radius:4px;background:var(--b1);overflow:hidden;">
-                        <div
-                            style="height:100%;width:{{ $totalOrderValue > 0 ? (max(0, $totalOutstanding) / $totalOrderValue) * 100 : 0 }}%;background:#ef4444;border-radius:4px;">
+                    <div class="pay-stat-progress">
+                        <div class="pay-stat-progress-fill outstanding"
+                            style="width: {{ $totalOrderValue > 0 ? (max(0, min(100, ($totalOutstanding / $totalOrderValue) * 100))) : 0 }}%;">
                         </div>
                     </div>
                 </div>
@@ -352,4 +346,242 @@
             }
         }
     </script>
+
+    <style>
+        .pay-stats-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 14px;
+            margin-bottom: 24px;
+            max-width: 600px;
+            width: 100%;
+        }
+
+        .pay-stat-card {
+            padding: 18px 20px;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+            min-height: 100%;
+            box-sizing: border-box;
+            transition: transform 0.2s ease, border-color 0.2s ease, box-shadow 0.2s ease;
+        }
+
+        .pay-stat-card:hover {
+            border-color: var(--b2);
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(0, 0, 0, 0.15);
+        }
+
+        .pay-stat-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 8px;
+            margin-bottom: 12px;
+        }
+
+        .pay-stat-icon {
+            width: 42px;
+            height: 42px;
+            border-radius: 11px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            flex-shrink: 0;
+        }
+
+        .pay-stat-icon i {
+            font-size: 19px;
+        }
+
+        .pay-stat-icon.collected {
+            background: rgba(16, 185, 129, 0.14);
+            color: #10b981;
+        }
+
+        .pay-stat-icon.outstanding {
+            background: rgba(239, 68, 68, 0.14);
+            color: #ef4444;
+        }
+
+        .pay-stat-badge {
+            font-size: 11px;
+            font-weight: 700;
+            padding: 3px 10px;
+            border-radius: 20px;
+            white-space: nowrap;
+            letter-spacing: 0.2px;
+        }
+
+        .pay-stat-badge.collected {
+            background: rgba(16, 185, 129, 0.1);
+            color: #10b981;
+        }
+
+        .pay-stat-badge.outstanding {
+            background: rgba(239, 68, 68, 0.1);
+            color: #ef4444;
+        }
+
+        .pay-stat-body {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+        }
+
+        .pay-stat-val {
+            font-size: 24px;
+            font-weight: 800;
+            letter-spacing: -0.5px;
+            line-height: 1.15;
+            font-family: var(--mono);
+            word-break: normal;
+            overflow-wrap: break-word;
+        }
+
+        .pay-stat-val.collected {
+            color: #10b981;
+        }
+
+        .pay-stat-val.outstanding {
+            color: #ef4444;
+        }
+
+        .pay-stat-lbl {
+            font-size: 12px;
+            color: var(--t3);
+            font-weight: 500;
+            margin-top: 4px;
+            line-height: 1.35;
+        }
+
+        .pay-stat-progress {
+            margin-top: 10px;
+            height: 4px;
+            border-radius: 4px;
+            background: var(--b1);
+            overflow: hidden;
+        }
+
+        .pay-stat-progress-fill {
+            height: 100%;
+            border-radius: 4px;
+            transition: width 0.3s ease;
+        }
+
+        .pay-stat-progress-fill.collected {
+            background: #10b981;
+        }
+
+        .pay-stat-progress-fill.outstanding {
+            background: #ef4444;
+        }
+
+        @media (max-width: 768px) {
+            .pay-stats-grid,
+            #statsWrap {
+                grid-template-columns: repeat(2, 1fr) !important;
+                gap: 10px !important;
+                margin-bottom: 16px !important;
+                max-width: 100% !important;
+            }
+
+            .pay-stat-card {
+                padding: 13px 14px !important;
+                border-radius: var(--r-sm, 10px) !important;
+            }
+
+            .pay-stat-header {
+                margin-bottom: 9px !important;
+            }
+
+            .pay-stat-icon {
+                width: 36px !important;
+                height: 36px !important;
+                border-radius: 9px !important;
+            }
+
+            .pay-stat-icon i {
+                font-size: 16px !important;
+            }
+
+            .pay-stat-badge {
+                font-size: 10px !important;
+                padding: 2px 7px !important;
+            }
+
+            .pay-stat-val {
+                font-size: 18px !important;
+            }
+
+            .pay-stat-lbl {
+                font-size: 11px !important;
+                margin-top: 3px !important;
+                line-height: 1.25 !important;
+            }
+
+            .pay-stat-progress {
+                margin-top: 8px !important;
+                height: 3.5px !important;
+            }
+        }
+
+        @media (max-width: 480px) {
+            .pay-stats-grid,
+            #statsWrap {
+                grid-template-columns: repeat(2, 1fr) !important;
+                gap: 8px !important;
+            }
+
+            .pay-stat-card {
+                padding: 11px 10px !important;
+            }
+
+            .pay-stat-header {
+                margin-bottom: 7px !important;
+            }
+
+            .pay-stat-icon {
+                width: 30px !important;
+                height: 30px !important;
+                border-radius: 8px !important;
+            }
+
+            .pay-stat-icon i {
+                font-size: 14px !important;
+            }
+
+            .pay-stat-badge {
+                font-size: 9px !important;
+                padding: 1.5px 5px !important;
+            }
+
+            .pay-stat-val {
+                font-size: 15px !important;
+            }
+
+            .pay-stat-lbl {
+                font-size: 10px !important;
+                letter-spacing: -0.1px !important;
+            }
+        }
+
+        @media (max-width: 340px) {
+            .pay-stats-grid,
+            #statsWrap {
+                grid-template-columns: 1fr !important;
+                gap: 8px !important;
+            }
+
+            .pay-stat-card {
+                padding: 12px 14px !important;
+            }
+
+            .pay-stat-val {
+                font-size: 18px !important;
+            }
+        }
+    </style>
 @endsection
