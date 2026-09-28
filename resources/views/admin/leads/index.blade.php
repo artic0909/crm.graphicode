@@ -566,6 +566,13 @@
                                 <option value="{{ $status->id }}" {{ request('status_id') == $status->id ? 'selected' : '' }}>{{ $status->name }}</option>
                             @endforeach
                         </select>
+                        @if((isset($routePrefix) && $routePrefix === 'sale' && (request('type') === 'my' || !request('type'))) || ((!isset($routePrefix) || $routePrefix === 'admin') && (request('type') === 'total' || !request('type'))))
+                        <select name="has_schedule" class="filter-select" onchange="updateFilters()">
+                            <option value="">Schedule Status</option>
+                            <option value="no_schedule" {{ request('has_schedule') == 'no_schedule' ? 'selected' : '' }}>No Schedule</option>
+                            <option value="scheduled" {{ request('has_schedule') == 'scheduled' ? 'selected' : '' }}>Scheduled</option>
+                        </select>
+                        @endif
                         <select name="per_page" class="filter-select" onchange="updateFilters()">
                             <option value="10" {{ request('per_page') == 10 ? 'selected' : '' }}>10 Rows</option>
                             <option value="20" {{ (request('per_page') == 20 || !request('per_page')) ? 'selected' : '' }}>20 Rows</option>

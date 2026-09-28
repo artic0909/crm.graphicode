@@ -182,6 +182,26 @@ class LeadController extends Controller
             });
         }
 
+        if ($request->filled('has_schedule')) {
+            if ($request->has_schedule === 'scheduled') {
+                $query->whereHas('followups', function ($q) {
+                    $q->whereIn('id', function($sub) {
+                        $sub->selectRaw('max(id)')->from('followups')
+                            ->whereColumn('followable_id', 'leads.id')
+                            ->where('followable_type', \App\Models\Lead::class);
+                    })->whereNotNull('next_schedule_date');
+                });
+            } elseif ($request->has_schedule === 'no_schedule') {
+                $query->whereDoesntHave('followups', function ($q) {
+                    $q->whereIn('id', function($sub) {
+                        $sub->selectRaw('max(id)')->from('followups')
+                            ->whereColumn('followable_id', 'leads.id')
+                            ->where('followable_type', \App\Models\Lead::class);
+                    })->whereNotNull('next_schedule_date');
+                });
+            }
+        }
+
         // Clone base query for statistics calculation
         $statsQuery = clone $query;
         $totalLeads = $statsQuery->count();
@@ -813,6 +833,26 @@ class LeadController extends Controller
             $query->whereHas('assignments', function($q) use ($request) {
                 $q->where('assigned_to', $request->assigned_to);
             });
+        }
+
+        if ($request->filled('has_schedule')) {
+            if ($request->has_schedule === 'scheduled') {
+                $query->whereHas('followups', function ($q) {
+                    $q->whereIn('id', function($sub) {
+                        $sub->selectRaw('max(id)')->from('followups')
+                            ->whereColumn('followable_id', 'leads.id')
+                            ->where('followable_type', \App\Models\Lead::class);
+                    })->whereNotNull('next_schedule_date');
+                });
+            } elseif ($request->has_schedule === 'no_schedule') {
+                $query->whereDoesntHave('followups', function ($q) {
+                    $q->whereIn('id', function($sub) {
+                        $sub->selectRaw('max(id)')->from('followups')
+                            ->whereColumn('followable_id', 'leads.id')
+                            ->where('followable_type', \App\Models\Lead::class);
+                    })->whereNotNull('next_schedule_date');
+                });
+            }
         }
 
         $leads = $query->orderBy('created_at', 'desc')->get();
