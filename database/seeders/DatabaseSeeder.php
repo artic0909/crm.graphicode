@@ -20,29 +20,9 @@ class DatabaseSeeder extends Seeder
             ['name' => 'Test User', 'password' => \Illuminate\Support\Facades\Hash::make('password')]
         );
 
-        \App\Models\Admin::firstOrCreate(
-            ['email' => 'admin@mail.com'],
-            [
-                'name' => 'Super Admin',
-                'password' => \Illuminate\Support\Facades\Hash::make('12345'),
-            ]
-        );
-
-        \App\Models\Sale::firstOrCreate(
-            ['email' => 'sale@mail.com'],
-            [
-                'name' => 'Sales Executive',
-                'password' => \Illuminate\Support\Facades\Hash::make('12345'),
-            ]
-        );
-
-        \App\Models\Developer::firstOrCreate(
-            ['email' => 'developer@mail.com'],
-            [
-                'name' => 'Developer',
-                'password' => \Illuminate\Support\Facades\Hash::make('12345'),
-            ]
-        );
+        $this->call([
+            AdminSalesDeveloperSeeder::class,
+        ]);
 
         // Seed Statuses
         $statusTypes = [
